@@ -14,28 +14,26 @@
             struct Attributes
             {
                 float4 position : POSITION;
-                float2 texcoord : TEXCOORD0;
+                float2 texcoord : TEXCOORD;
             };
 
-            struct Varyings
+            void Vertex(
+                Attributes input,
+                out float4 position : SV_POSITION,
+                out float2 texcoord : TEXCOORD,
+                out float clip0 : SV_ClipDistance0,
+                out float clip1 : SV_ClipDistance1
+            )
             {
-                float4 position : SV_POSITION;
-                float clip0 : SV_ClipDistance0;
-                float clip1 : SV_ClipDistance1;
-            };
-
-            Varyings Vertex(Attributes input)
-            {
-                Varyings o;
-                o.position = UnityObjectToClipPos(input.position);
-                o.clip0 = input.texcoord.x * 2 - 1;
-                o.clip1 = 1.7 - dot(input.texcoord, 1);
-                return o;
+                position = UnityObjectToClipPos(input.position);
+                texcoord = input.texcoord;
+                clip0 = input.texcoord.x * 2 - 1;
+                clip1 = 1.7 - dot(input.texcoord, 1);
             }
 
-            half4 Fragment(Varyings input) : SV_Target
+            half4 Fragment(float2 texcoord : TEXCOORD) : SV_Target
             {
-                return half4(input.clip0, input.clip1, 0, 1);
+                return half4(texcoord.xy, 0, 1);
             }
 
             ENDCG
